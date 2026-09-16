@@ -9,7 +9,8 @@
     "start": "electron .",
     "start:silent": "electron . --silent",
     "stop": "electron . --stop",
-    "check": "node --check src/main.js && node --check src/preload.js && node --check src/agent/server.js && node --check src/agent/config.js && node --check src/agent/security.js && node --check src/agent/tools.js && node --check src/agent/audit.js && node --check src/mcp/server.mjs && node --check src/renderer/renderer.js",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/agent/server.js && node --check src/agent/config.js && node --check src/agent/security.js && node --check src/agent/tools.js && node --check src/agent/audit.js && node --check src/mcp/server.mjs && node --check src/renderer/renderer.js && node --check scripts/smoke-mcp.mjs",
+    "test:smoke": "node scripts/smoke-mcp.mjs",
     "dist:win": "electron-builder --win nsis portable"
   },
   "dependencies": {
@@ -23,7 +24,7 @@
   "build": {
     "appId": "com.gptlocalbridge.desktop",
     "productName": "GPT Local Bridge",
-    "asar": true,
+    "asar": false,
     "files": [
       "src/**/*",
       "package.json"
