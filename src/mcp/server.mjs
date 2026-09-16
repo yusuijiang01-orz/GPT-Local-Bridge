@@ -196,6 +196,7 @@ async function createSessionTransport() {
   let transport;
   transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: () => crypto.randomUUID(),
+    enableJsonResponse: true,
     onsessioninitialized: (sessionId) => {
       transports.set(sessionId, transport);
       console.log(`[mcp] session initialized id=${sessionId}`);
