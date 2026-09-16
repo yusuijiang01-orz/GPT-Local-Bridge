@@ -1,16 +1,44 @@
 {
   "name": "gpt-local-bridge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Windows local workspace bridge with Electron control panel and a sandboxed localhost agent.",
+  "description": "Windows local workspace bridge with Electron control panel, MCP bridge, Secure MCP Tunnel supervision and local audit boundaries.",
   "main": "src/main.js",
   "type": "commonjs",
   "scripts": {
     "start": "electron .",
     "start:silent": "electron . --silent",
-    "check": "node --check src/main.js && node --check src/preload.js && node --check src/agent/server.js && node --check src/agent/config.js && node --check src/agent/security.js && node --check src/agent/tools.js && node --check src/agent/audit.js && node --check src/renderer/renderer.js"
+    "stop": "electron . --stop",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/agent/server.js && node --check src/agent/config.js && node --check src/agent/security.js && node --check src/agent/tools.js && node --check src/agent/audit.js && node --check src/mcp/server.mjs && node --check src/renderer/renderer.js && node --check scripts/smoke-mcp.mjs",
+    "test:smoke": "node scripts/smoke-mcp.mjs",
+    "dist:win": "electron-builder --win nsis portable"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "4.6.5"
   },
   "devDependencies": {
-    "electron": "44.4.1"
+    "electron": "44.4.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.gptlocalbridge.desktop",
+    "productName": "GPT Local Bridge",
+    "asar": false,
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "artifactName": "${productName}-${version}-${arch}.${ext}"
   }
 }

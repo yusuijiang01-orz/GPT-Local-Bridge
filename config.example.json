@@ -1,9 +1,18 @@
 {
   "port": 8787,
+  "mcpPort": 8788,
   "autoStartService": true,
+  "autoStartMcpBridge": true,
   "startMinimized": false,
   "startWithWindows": false,
   "workspaces": [],
+  "tunnel": {
+    "enabled": false,
+    "autoStart": false,
+    "executable": "tunnel-client",
+    "tunnelId": "",
+    "healthPort": 8790
+  },
   "limits": {
     "maxFileBytes": 262144,
     "maxListEntries": 1000,

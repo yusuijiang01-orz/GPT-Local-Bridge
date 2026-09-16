@@ -53,7 +53,10 @@ function readJson(req, limit = 1024 * 1024) {
 }
 
 const server = http.createServer(async (req, res) => {
-  if (!authorized(req)) return send(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Invalid local bridge token.' } });
+  if (!authorized(req)) {
+    console.warn(`[rpc] unauthorized method=${req.method || '-'} route=${req.url || '-'}`);
+    return send(res, 401, { ok: false, error: { code: 'UNAUTHORIZED', message: 'Invalid local bridge token.' } });
+  }
 
   if (req.method === 'GET' && req.url === '/health') {
     return send(res, 200, { ok: true, service: 'gpt-local-bridge-agent', pid: process.pid, uptime_ms: Date.now() - startedAt, port });
@@ -67,12 +70,17 @@ const server = http.createServer(async (req, res) => {
       const requestId = body.request_id || crypto.randomUUID();
       config = loadConfig(configPath);
       const result = await executeTool(config, body.method, body.params || {});
-      audit.write({ request_id: requestId, tool: body.method, ok: true, duration_ms: Date.now() - began });
+      const duration = Date.now() - began;
+      audit.write({ request_id: requestId, tool: body.method, ok: true, duration_ms: duration });
+      console.log(`[rpc] request_id=${requestId} tool=${body.method || '-'} ok=true duration_ms=${duration}`);
       return send(res, 200, { request_id: requestId, ok: true, tool: body.method, result, error: null, redactions: [] });
     } catch (error) {
       const requestId = body?.request_id || crypto.randomUUID();
-      audit.write({ request_id: requestId, tool: body?.method || null, ok: false, error_code: error.code || 'INTERNAL_ERROR', duration_ms: Date.now() - began });
-      return send(res, 400, { request_id: requestId, ok: false, tool: body?.method || null, result: null, error: { code: error.code || 'INTERNAL_ERROR', message: error.message }, redactions: [] });
+      const duration = Date.now() - began;
+      const errorCode = error.code || 'INTERNAL_ERROR';
+      audit.write({ request_id: requestId, tool: body?.method || null, ok: false, error_code: errorCode, duration_ms: duration });
+      console.warn(`[rpc] request_id=${requestId} tool=${body?.method || '-'} ok=false error_code=${errorCode} duration_ms=${duration}`);
+      return send(res, 400, { request_id: requestId, ok: false, tool: body?.method || null, result: null, error: { code: errorCode, message: error.message }, redactions: [] });
     }
   }
 
@@ -83,7 +91,12 @@ server.listen(port, '127.0.0.1', () => {
   console.log(`GPT Local Bridge agent listening on 127.0.0.1:${port}`);
 });
 
+server.on('error', (error) => {
+  console.error(`[agent] server error code=${error.code || 'UNKNOWN'} message=${error.message}`);
+});
+
 function shutdown() {
+  console.log('[agent] shutdown requested');
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(0), 1500).unref();
 }

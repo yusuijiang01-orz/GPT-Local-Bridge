@@ -3,10 +3,19 @@ const path = require('node:path');
 
 const DEFAULTS = Object.freeze({
   port: 8787,
+  mcpPort: 8788,
   autoStartService: true,
+  autoStartMcpBridge: true,
   startMinimized: false,
   startWithWindows: false,
   workspaces: [],
+  tunnel: {
+    enabled: false,
+    autoStart: false,
+    executable: 'tunnel-client',
+    tunnelId: '',
+    healthPort: 8790
+  },
   limits: {
     maxFileBytes: 256 * 1024,
     maxListEntries: 1000,
@@ -21,6 +30,7 @@ function mergeConfig(value = {}) {
     ...DEFAULTS,
     ...value,
     workspaces: Array.isArray(value.workspaces) ? value.workspaces : [],
+    tunnel: { ...DEFAULTS.tunnel, ...(value.tunnel || {}) },
     limits: { ...DEFAULTS.limits, ...(value.limits || {}) }
   };
 }
