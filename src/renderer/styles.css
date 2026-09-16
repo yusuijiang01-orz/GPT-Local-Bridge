@@ -1,0 +1,35 @@
+:root { font-family: Inter, "Segoe UI", system-ui, sans-serif; color-scheme: dark; background: #101318; color: #e9edf3; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #101318; }
+.app-shell { max-width: 980px; margin: 0 auto; padding: 28px; }
+header, .section-head, footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+h1 { margin: 0; font-size: 26px; }
+h2 { margin: 0 0 12px; font-size: 17px; }
+p { margin: 5px 0 0; color: #9aa5b5; }
+.card { background: #171c24; border: 1px solid #293140; border-radius: 14px; padding: 20px; margin-top: 16px; }
+.grid.two { display: grid; grid-template-columns: 1fr 220px; gap: 24px; }
+dl { margin: 0; }
+dl div { display: flex; gap: 16px; margin: 9px 0; }
+dt { color: #9aa5b5; width: 92px; }
+dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+.badge { border-radius: 999px; padding: 8px 12px; font-size: 13px; border: 1px solid; }
+.badge.running { background: #173224; border-color: #2f7650; color: #9ce0b6; }
+.badge.stopped { background: #332020; border-color: #744141; color: #f0aaaa; }
+.actions { display: flex; gap: 10px; }
+.vertical { flex-direction: column; }
+button, input { font: inherit; }
+button { cursor: pointer; border: 1px solid #3b4658; background: #222a36; color: #e9edf3; padding: 9px 13px; border-radius: 9px; }
+button:disabled { opacity: .45; cursor: default; }
+button.primary { background: #2b5bd7; border-color: #3e6ee8; }
+button.danger { background: #682f35; border-color: #874047; }
+.settings-row { display: grid; gap: 10px; }
+.settings-row label { display: flex; gap: 8px; align-items: center; }
+.port-row { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+.port-row input { width: 120px; background: #0f1319; color: #e9edf3; border: 1px solid #3b4658; border-radius: 8px; padding: 8px; }
+.workspace-list { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; }
+.workspace-list li { display: flex; align-items: center; gap: 10px; background: #10151c; border: 1px solid #2b3442; border-radius: 9px; padding: 9px 10px; }
+.workspace-list code { flex: 1; overflow-wrap: anywhere; }
+pre { min-height: 120px; max-height: 240px; overflow: auto; background: #0d1117; border: 1px solid #28303c; border-radius: 9px; padding: 12px; white-space: pre-wrap; }
+footer { margin-top: 18px; justify-content: flex-end; }
+#saveState { color: #9aa5b5; }
+@media (max-width: 760px) { .grid.two { grid-template-columns: 1fr; } header, .section-head { align-items: flex-start; } }
