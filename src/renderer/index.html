@@ -12,38 +12,97 @@
     <header>
       <div>
         <h1>GPT Local Bridge</h1>
-        <p>Electron 本地控制面板</p>
+        <p>Local Agent → MCP Bridge → Secure MCP Tunnel</p>
       </div>
-      <div id="statusBadge" class="badge stopped">服务已停止</div>
+      <div id="overallBadge" class="badge stopped">Bridge 已停止</div>
     </header>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Bridge 状态</h2>
+          <p>三段链路分别显示，避免“本地服务正常”被误认为“ChatGPT 已可调用”。</p>
+        </div>
+        <div class="actions">
+          <button id="startStackBtn" class="primary">启动 Bridge</button>
+          <button id="stopStackBtn" class="danger">停止 Bridge</button>
+          <button id="refreshBtn">刷新状态</button>
+        </div>
+      </div>
+
+      <div class="service-grid">
+        <article class="service-box">
+          <div class="service-title"><span id="agentDot" class="dot"></span><strong>Local Agent</strong></div>
+          <dl>
+            <div><dt>状态</dt><dd id="agentStatus">-</dd></div>
+            <div><dt>地址</dt><dd id="agentEndpoint">127.0.0.1:8787</dd></div>
+            <div><dt>PID</dt><dd id="agentPid">-</dd></div>
+          </dl>
+        </article>
+        <article class="service-box">
+          <div class="service-title"><span id="mcpDot" class="dot"></span><strong>MCP Bridge</strong></div>
+          <dl>
+            <div><dt>状态</dt><dd id="mcpStatus">-</dd></div>
+            <div><dt>MCP URL</dt><dd id="mcpEndpoint">http://127.0.0.1:8788/mcp</dd></div>
+            <div><dt>PID</dt><dd id="mcpPid">-</dd></div>
+          </dl>
+        </article>
+        <article class="service-box">
+          <div class="service-title"><span id="tunnelDot" class="dot"></span><strong>Secure MCP Tunnel</strong></div>
+          <dl>
+            <div><dt>状态</dt><dd id="tunnelStatus">未启用</dd></div>
+            <div><dt>Tunnel ID</dt><dd id="activeTunnelId">-</dd></div>
+            <div><dt>Runtime Key</dt><dd id="runtimeKeyState">未检测</dd></div>
+          </dl>
+          <div class="actions compact">
+            <button id="startTunnelBtn">启动 Tunnel</button>
+            <button id="stopTunnelBtn">停止 Tunnel</button>
+          </div>
+        </article>
+      </div>
+    </section>
 
     <section class="card grid two">
       <div>
-        <h2>Local Agent</h2>
-        <dl>
-          <div><dt>地址</dt><dd id="endpoint">127.0.0.1:8787</dd></div>
-          <div><dt>PID</dt><dd id="pid">-</dd></div>
-          <div><dt>健康状态</dt><dd id="health">-</dd></div>
-        </dl>
+        <h2>启动设置</h2>
+        <div class="settings-row">
+          <label><input id="autoStartService" type="checkbox" /> 启动应用时自动启动 Local Agent</label>
+          <label><input id="autoStartMcpBridge" type="checkbox" /> 自动启动 MCP Bridge</label>
+          <label><input id="startMinimized" type="checkbox" /> 默认静默/最小化到托盘</label>
+          <label><input id="startWithWindows" type="checkbox" /> Windows 登录后静默启动</label>
+        </div>
       </div>
-      <div class="actions vertical">
-        <button id="startBtn" class="primary">启动服务</button>
-        <button id="stopBtn" class="danger">停止服务</button>
-        <button id="refreshBtn">刷新状态</button>
+      <div>
+        <h2>本机端口</h2>
+        <div class="field-grid">
+          <label>Local Agent 端口<input id="port" type="number" min="1024" max="65535" /></label>
+          <label>MCP Bridge 端口<input id="mcpPort" type="number" min="1024" max="65535" /></label>
+        </div>
       </div>
     </section>
 
     <section class="card">
-      <h2>启动设置</h2>
-      <div class="settings-row">
-        <label><input id="autoStartService" type="checkbox" /> 启动应用时自动启动服务</label>
-        <label><input id="startMinimized" type="checkbox" /> 默认静默/最小化到托盘</label>
-        <label><input id="startWithWindows" type="checkbox" /> Windows 登录后静默启动</label>
+      <div class="section-head">
+        <div>
+          <h2>ChatGPT / Secure MCP Tunnel</h2>
+          <p>ChatGPT 不能直接访问 localhost。这里管理官方 <code>tunnel-client</code>，Runtime API Key 只从 <code>CONTROL_PLANE_API_KEY</code> 环境变量读取，不写入配置文件。</p>
+        </div>
+        <div class="actions compact">
+          <button id="openTunnelsBtn">打开 Tunnels 管理</button>
+          <button id="openTunnelClientBtn">下载 tunnel-client</button>
+          <button id="openMcpHelpBtn">ChatGPT MCP 帮助</button>
+        </div>
       </div>
-      <div class="port-row">
-        <label for="port">监听端口</label>
-        <input id="port" type="number" min="1024" max="65535" />
+      <div class="settings-row inline">
+        <label><input id="tunnelEnabled" type="checkbox" /> 启用 Secure MCP Tunnel</label>
+        <label><input id="tunnelAutoStart" type="checkbox" /> Bridge 启动时自动启动 Tunnel</label>
       </div>
+      <div class="field-grid three">
+        <label>tunnel-client 可执行文件<input id="tunnelExecutable" type="text" placeholder="tunnel-client" /></label>
+        <label>Tunnel ID<input id="tunnelId" type="text" placeholder="tunnel_..." /></label>
+        <label>Tunnel 健康端口<input id="tunnelHealthPort" type="number" min="1024" max="65535" /></label>
+      </div>
+      <div class="hint">首次连接：在 OpenAI Platform 创建 Tunnel → 设置 Runtime API Key 环境变量 → 填写 Tunnel ID → 启动 Bridge → 在 ChatGPT 的自定义 App 中选择 Connection: Tunnel 并使用同一个 Tunnel。</div>
     </section>
 
     <section class="card">
@@ -56,10 +115,29 @@
 
     <section class="card">
       <div class="section-head">
-        <div><h2>只读连通性测试</h2><p>调用 <code>list_files</code> 验证工作区和权限边界。</p></div>
+        <div><h2>只读连通性测试</h2><p>调用 <code>list_files</code> 验证工作区、Local Agent 和权限边界。</p></div>
         <button id="testBtn">运行测试</button>
       </div>
       <pre id="output">等待操作。</pre>
+    </section>
+
+    <section class="card log-card">
+      <div class="section-head">
+        <div><h2>实时日志</h2><p>显示 Electron、Local Agent、MCP Bridge 和 tunnel-client 的运行日志；敏感 Token 会在写入前脱敏。</p></div>
+        <div class="actions compact">
+          <select id="logFilter" aria-label="日志来源筛选">
+            <option value="all">全部来源</option>
+            <option value="app">App</option>
+            <option value="agent">Agent</option>
+            <option value="mcp">MCP</option>
+            <option value="tunnel">Tunnel</option>
+          </select>
+          <label class="inline-check"><input id="autoScroll" type="checkbox" checked /> 自动滚动</label>
+          <button id="clearLogsBtn">清空视图</button>
+          <button id="openLogFileBtn">打开日志文件</button>
+        </div>
+      </div>
+      <pre id="logs" class="logs">等待日志...</pre>
     </section>
 
     <footer>
