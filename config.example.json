@@ -1,0 +1,14 @@
+{
+  "port": 8787,
+  "autoStartService": true,
+  "startMinimized": false,
+  "startWithWindows": false,
+  "workspaces": [],
+  "limits": {
+    "maxFileBytes": 262144,
+    "maxListEntries": 1000,
+    "maxSearchResults": 100,
+    "maxSearchBytes": 262144,
+    "commandTimeoutMs": 120000
+  }
+}

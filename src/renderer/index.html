@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'" />
+  <title>GPT Local Bridge</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header>
+      <div>
+        <h1>GPT Local Bridge</h1>
+        <p>Electron 本地控制面板</p>
+      </div>
+      <div id="statusBadge" class="badge stopped">服务已停止</div>
+    </header>
+
+    <section class="card grid two">
+      <div>
+        <h2>Local Agent</h2>
+        <dl>
+          <div><dt>地址</dt><dd id="endpoint">127.0.0.1:8787</dd></div>
+          <div><dt>PID</dt><dd id="pid">-</dd></div>
+          <div><dt>健康状态</dt><dd id="health">-</dd></div>
+        </dl>
+      </div>
+      <div class="actions vertical">
+        <button id="startBtn" class="primary">启动服务</button>
+        <button id="stopBtn" class="danger">停止服务</button>
+        <button id="refreshBtn">刷新状态</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>启动设置</h2>
+      <div class="settings-row">
+        <label><input id="autoStartService" type="checkbox" /> 启动应用时自动启动服务</label>
+        <label><input id="startMinimized" type="checkbox" /> 默认静默/最小化到托盘</label>
+        <label><input id="startWithWindows" type="checkbox" /> Windows 登录后静默启动</label>
+      </div>
+      <div class="port-row">
+        <label for="port">监听端口</label>
+        <input id="port" type="number" min="1024" max="65535" />
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div><h2>允许的工作区</h2><p>Agent 只能访问这里列出的根目录及其子目录。</p></div>
+        <button id="addWorkspaceBtn">添加目录</button>
+      </div>
+      <ul id="workspaceList" class="workspace-list"></ul>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div><h2>只读连通性测试</h2><p>调用 <code>list_files</code> 验证工作区和权限边界。</p></div>
+        <button id="testBtn">运行测试</button>
+      </div>
+      <pre id="output">等待操作。</pre>
+    </section>
+
+    <footer>
+      <button id="saveBtn" class="primary">保存设置</button>
+      <span id="saveState"></span>
+    </footer>
+  </main>
+  <script src="renderer.js"></script>
+</body>
+</html>

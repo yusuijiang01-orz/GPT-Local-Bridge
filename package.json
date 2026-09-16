@@ -1,0 +1,16 @@
+{
+  "name": "gpt-local-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Windows local workspace bridge with Electron control panel and a sandboxed localhost agent.",
+  "main": "src/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "start:silent": "electron . --silent",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/agent/server.js && node --check src/agent/config.js && node --check src/agent/security.js && node --check src/agent/tools.js && node --check src/agent/audit.js && node --check src/renderer/renderer.js"
+  },
+  "devDependencies": {
+    "electron": "44.4.1"
+  }
+}
